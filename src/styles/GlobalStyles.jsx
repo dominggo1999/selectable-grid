@@ -4,7 +4,7 @@ import tw, { theme, GlobalStyles as BaseStyles } from 'twin.macro';
 
 const CustomStyles = createGlobalStyle`
   body {
-    ${tw`antialiased`}
+    ${tw`antialiased overflow-x-hidden`}
   }
 `;
 

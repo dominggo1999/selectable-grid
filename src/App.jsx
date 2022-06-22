@@ -1,8 +1,26 @@
 import React, { useEffect, useState, useRef } from 'react';
 
+const removeUnit = (string) => parseInt(string.replace('px', ''), 10);
+
+const Cell = ({ boundingRect }) => {
+  return (
+    <div
+      style={{
+        border: '1px solid black',
+        pointerEvents: 'none',
+        userSelect: 'none',
+      }}
+    />
+
+  );
+};
+
+const grids = Array.from(Array(100).keys());
+
 const App = () => {
   const boxRef = useRef();
   const anchor = useRef({});
+  // const [dimensions, setDimensions] = useState({});
 
   useEffect(() => {
     const move = (e) => {
@@ -27,6 +45,33 @@ const App = () => {
 
       boxRef.current.style.width = `${Math.abs(width)}px`;
       boxRef.current.style.height = `${Math.abs(height)}px`;
+
+      const {
+        left, top,
+      } = boxRef.current.style;
+
+      const newWidth = Math.abs(width);
+      const newHeight = Math.abs(height);
+      const newLeft = removeUnit(left);
+      const newTop = removeUnit(top);
+
+      const grids = document.querySelector('.grids-wrapper').querySelectorAll('div');
+
+      // Evaluate each grid
+      for (let i = 0; i < grids.length; i += 1) {
+        const {
+          x: cellX, y: cellY, width: cellWidth, height: cellHeight,
+        } = grids[i].getBoundingClientRect();
+
+        if (cellX > newLeft
+          && cellX + cellWidth < newLeft + newWidth
+          && cellY > newTop
+          && cellY + cellHeight < newTop + newHeight) {
+          grids[i].style.background = 'red';
+        } else {
+          grids[i].style.background = 'transparent';
+        }
+      }
     };
 
     const down = (e) => {
@@ -66,6 +111,30 @@ const App = () => {
           position: 'absolute',
         }}
       />
+      <div
+        style={{
+          display: 'flex', width: '100%', justifyContent: 'center', marginTop: '200px',
+        }}
+      >
+        <div
+          className="grids-wrapper"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(10, 20px)',
+            gridTemplateRows: 'repeat(10, 20px)',
+          }}
+        >
+          {
+            grids.map((i) => {
+              return (
+                <Cell
+                  key={i}
+                />
+              );
+            })
+          }
+        </div>
+      </div>
     </>
   );
 };
